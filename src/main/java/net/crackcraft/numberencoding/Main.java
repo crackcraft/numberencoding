@@ -13,7 +13,8 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         Dictionary dict = new Dictionary(Files.readAllLines(FileSystems.getDefault().getPath(args[0]), Charset.forName("ASCII")));
-        dict.encode("5624-82");
-
+        for(String number: Files.readAllLines(FileSystems.getDefault().getPath(args[1]), Charset.forName("ASCII"))) {
+            dict.encode(number);
+        }
     }
 }

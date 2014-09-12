@@ -1,145 +1,174 @@
 package net.crackcraft.numberencoding;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by crackcraft on 11.09.2014.
  */
 
 public class Dictionary {
-    final Node root = new Node();
+    final Map<String, List<String>> dict = new HashMap<String, List<String>>();
 
     Dictionary(List<String> words) {
         for(String word: words) {
-            add(root, word, 0);
+            String nums = str2nums(word);
+            if(nums.length()>0) {
+                List<String> page = dict.get(nums);
+                if(page == null) {
+                    page = new ArrayList<String>();
+                    dict.put(nums, page);
+                }
+                page.add(word);
+            }
         }
     }
 
-    private static int num(char c) {
-        switch(c) {
-            case 'E':
-            case 'e':
-                return 0;
-            case 'J':
-            case 'N':
-            case 'Q':
-            case 'j':
-            case 'n':
-            case 'q':
-                return 1;
+    private static String str2nums(String str) {
+        StringBuilder nums = new StringBuilder(str.length());
+        for(int i=0; i<str.length(); i++) {
+            switch (str.charAt(i)) {
+                case 'E':
+                case 'e':
+                    nums.append('0');
+                    break;
 
-            case 'R':
-            case 'W':
-            case 'X':
-            case 'r':
-            case 'w':
-            case 'x':
-                return 2;
+                case 'J':
+                case 'N':
+                case 'Q':
+                case 'j':
+                case 'n':
+                case 'q':
+                    nums.append('1');
+                    break;
 
-            case 'D':
-            case 'S':
-            case 'Y':
-            case 'd':
-            case 's':
-            case 'y':
-                return 3;
+                case 'R':
+                case 'W':
+                case 'X':
+                case 'r':
+                case 'w':
+                case 'x':
+                    nums.append('2');
+                    break;
 
-            case 'F':
-            case 'T':
-            case 'f':
-            case 't':
-                return 4;
+                case 'D':
+                case 'S':
+                case 'Y':
+                case 'd':
+                case 's':
+                case 'y':
+                    nums.append('3');
+                    break;
 
-            case 'A':
-            case 'M':
-            case 'a':
-            case 'm':
-                return 5;
+                case 'F':
+                case 'T':
+                case 'f':
+                case 't':
+                    nums.append('4');
+                    break;
 
-            case 'C':
-            case 'I':
-            case 'V':
-            case 'c':
-            case 'i':
-            case 'v':
-                return 6;
+                case 'A':
+                case 'M':
+                case 'a':
+                case 'm':
+                    nums.append('5');
+                    break;
 
-            case 'B':
-            case 'K':
-            case 'U':
-            case 'b':
-            case 'k':
-            case 'u':
-                return 7;
+                case 'C':
+                case 'I':
+                case 'V':
+                case 'c':
+                case 'i':
+                case 'v':
+                    nums.append('6');
+                    break;
 
-            case 'L':
-            case 'O':
-            case 'P':
-            case 'l':
-            case 'o':
-            case 'p':
-                return 8;
+                case 'B':
+                case 'K':
+                case 'U':
+                case 'b':
+                case 'k':
+                case 'u':
+                    nums.append('7');
+                    break;
 
-            case 'G':
-            case 'H':
-            case 'Z':
-            case 'g':
-            case 'h':
-            case 'z':
-                return 9;
+                case 'L':
+                case 'O':
+                case 'P':
+                case 'l':
+                case 'o':
+                case 'p':
+                    nums.append('8');
+                    break;
 
-            default:
-                return -1;
+                case 'G':
+                case 'H':
+                case 'Z':
+                case 'g':
+                case 'h':
+                case 'z':
+                    nums.append('9');
+                    break;
+            }
         }
+        return nums.toString();
     }
 
-    private static void add(final Node node, final String word, int pos) {
-        while(pos < word.length()) {
-            int num = num(word.charAt(pos++));
-            if(num<0) {
-                continue;
+
+    private String number2nums(String number) {
+        StringBuilder nums = new StringBuilder(number.length());
+        for(int i=0; i<number.length(); i++) {
+            char c = number.charAt(i);
+            if(c>='0' && c<='9') {
+                nums.append(c);
             }
-            Node child = node.children[num];
-            if(child == null) {
-                child = new Node();
-                node.children[num] = child;
+        }
+        return nums.toString();
+    }
+
+
+    private void print(String number, String nums, List<String> words) {
+        System.out.print(number);
+        System.out.print(":");
+        for(int i=0; i<words.size(); i++) {
+            if(i==0 || words.get(i-1).length()>1 || words.get(i).length()>1) {
+                System.out.print(' ');
             }
-            add(child, word, pos);
+            System.out.print(words.get(i));
+        }
+        System.out.println();
+    }
+    private void advance(String number, String nums, int pos, List<String> words) {
+        if(pos == nums.length()) {
+            if(words.size() != pos) {
+                print(number, nums, words);
+            }
             return;
         }
-        node.values.add(word);
-    }
-
-    private void encode(final Node node, final String number, int pos, StringBuilder out, boolean found) {
-        for (String val : node.values) {
-            encode(root, number, pos, new StringBuilder(out).append(' ').append(val).append(' '), true);
+        boolean pass = false;
+        for(int end=nums.length(); end>pos; end--) {
+            String num = nums.substring(pos, end);
+            if(dict.containsKey(num)) {
+                pass = true;
+                for(String word: dict.get(num)) {
+                    words.add(word);
+                    advance(number, nums, end, words);
+                    words.remove(words.size() - 1);
+                }
+            }
         }
-
-        while(pos < number.length()) {
-            char c = number.charAt(pos++);
-            if(c<'0' || c>'9') {
-                continue;
-            }
-
-            if(node == root) {
-                encode(root, number, pos, new StringBuilder(out).append(c), found);
-            }
-
-            Node child = node.children[c-'0'];
-            if(child != null) {
-                encode(child, number, pos, out, found);
-            }
-            return;
-        }
-        if(found && node==root) {
-            System.out.print(number);
-            System.out.print(": ");
-            System.out.println(out.toString().replaceAll("^ ", "").replaceAll("  ", " ").replaceAll(" $", ""));
+        if(!pass) {
+            words.add(nums.substring(pos, pos+1));
+            advance(number, nums, pos+1, words);
+            words.remove(words.size()-1);
         }
 
     }
 
     public void encode(String number) {
-        encode(root, number, 0, new StringBuilder(), false);
+        String nums = number2nums(number);
+        advance(number, nums, 0, new ArrayList<String>());
     }
 }
