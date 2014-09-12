@@ -110,33 +110,36 @@ public class Dictionary {
         node.values.add(word);
     }
 
-    private void encode(final Node node, final String number, int pos, StringBuilder out, boolean found, boolean special) {
+    private void encode(final Node node, final String number, int pos, StringBuilder out, boolean found) {
         for (String val : node.values) {
-            encode(root, number, pos, new StringBuilder(out).append(' ').append(val), true, false);
+            encode(root, number, pos, new StringBuilder(out).append(' ').append(val).append(' '), true);
         }
 
         while(pos < number.length()) {
-            int num = Character.getNumericValue(number.charAt(pos++));
-            if(num<0 || num>9) {
-                continue; // leave the char?
+            char c = number.charAt(pos++);
+            if(c<'0' || c>'9') {
+                continue;
             }
-            Node child = node.children[num];
-            if(child == null) {
-                if(special || node == root) {
-                    encode(root, number, pos, new StringBuilder(out).append('0' + num), found, true);
-                }
-            } else {
-                encode(child, number, pos, out, found, false);
+
+            if(node == root) {
+                encode(root, number, pos, new StringBuilder(out).append(c), found);
+            }
+
+            Node child = node.children[c-'0'];
+            if(child != null) {
+                encode(child, number, pos, out, found);
             }
             return;
         }
-        if(found) {
-            System.out.println(number + ": "+out.toString());
+        if(found && node==root) {
+            System.out.print(number);
+            System.out.print(": ");
+            System.out.println(out.toString().replaceAll("^ ", "").replaceAll("  ", " ").replaceAll(" $", ""));
         }
 
     }
 
     public void encode(String number) {
-        encode(root, number, 0, new StringBuilder(), false, false);
+        encode(root, number, 0, new StringBuilder(), false);
     }
 }
