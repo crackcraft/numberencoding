@@ -10,9 +10,9 @@ import java.util.Map;
  */
 
 public class Dictionary {
-    final Map<String, List<String>> dict = new HashMap<String, List<String>>();
+    private final Map<String, List<String>> dict = new HashMap<String, List<String>>();
 
-    Dictionary(List<String> words) {
+    public Dictionary(List<String> words) {
         for(String word: words) {
             String nums = str2nums(word);
             if(nums.length()>0) {
@@ -117,7 +117,7 @@ public class Dictionary {
     }
 
 
-    private String number2nums(String number) {
+    private static String number2nums(String number) {
         StringBuilder nums = new StringBuilder(number.length());
         for(int i=0; i<number.length(); i++) {
             char c = number.charAt(i);
@@ -129,7 +129,7 @@ public class Dictionary {
     }
 
 
-    private void print(String number, String nums, List<String> words) {
+    private void print(String number, List<String> words) {
         System.out.print(number);
         System.out.print(":");
         for(int i=0; i<words.size(); i++) {
@@ -140,10 +140,11 @@ public class Dictionary {
         }
         System.out.println();
     }
+
     private void advance(String number, String nums, int pos, List<String> words) {
         if(pos == nums.length()) {
             if(words.size() != pos) {
-                print(number, nums, words);
+                print(number, words);
             }
             return;
         }
@@ -168,7 +169,6 @@ public class Dictionary {
     }
 
     public void encode(String number) {
-        String nums = number2nums(number);
-        advance(number, nums, 0, new ArrayList<String>());
+        advance(number, number2nums(number), 0, new ArrayList<String>());
     }
 }
