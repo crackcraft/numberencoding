@@ -1,9 +1,15 @@
 package net.crackcraft.numberencoding;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by crackcraft on 11.09.2014.
@@ -11,14 +17,22 @@ import java.nio.file.Files;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
-        if(args.length == 2) {
-            Dictionary dict = new Dictionary(Files.readAllLines(FileSystems.getDefault().getPath(args[0]), Charset.forName("ASCII")));
-            for (String number : Files.readAllLines(FileSystems.getDefault().getPath(args[1]), Charset.forName("ASCII"))) {
-                dict.encode(number);
+    private static List<String> readAllLines(String name) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(Main.class.getClassLoader().getResourceAsStream(name), "ASCII"));
+        List<String> result = new ArrayList<String>();
+        for(;;) {
+            String line = reader.readLine();
+            if(line == null) {
+                return result;
             }
-        } else {
-            System.err.println("Usage: java net.crackcraft.numberencoding.Main dictionary.txt input.txt");
+            result.add(line);
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        Dictionary dict = new Dictionary(readAllLines("dictionary.txt"));
+        for (String number: readAllLines("input.txt")) {
+            dict.encode(number);
         }
     }
 }
